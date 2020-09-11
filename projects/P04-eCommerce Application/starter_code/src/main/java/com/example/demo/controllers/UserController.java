@@ -4,16 +4,10 @@ import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.example.demo.model.persistence.Cart;
 import com.example.demo.model.persistence.User;
@@ -50,24 +44,31 @@ public class UserController {
 	
 	@PostMapping("/create")
 	public ResponseEntity<User> createUser(@RequestBody CreateUserRequest createUserRequest) {
-		User user = new User();
-		user.setUsername(createUserRequest.getUsername());
-		Cart cart = new Cart();
-		cartRepository.save(cart);
-		user.setCart(cart);
-		String password = createUserRequest.getPassword();
-		String confirmPassword = createUserRequest.getConfirmPassword();
+		try {
+			User user = new User();
+			user.setUsername(createUserRequest.getUsername());
+			Cart cart = new Cart();
+			cartRepository.save(cart);
+			user.setCart(cart);
+			String password = createUserRequest.getPassword();
+			String confirmPassword = createUserRequest.getConfirmPassword();
 
-		if (password.length() < 7 || !password.equals(confirmPassword)) {
-			logger.error("Error in password. Cannot create user {}", user.getUsername());
+			if (password.length() < 7 || !password.equals(confirmPassword)) {
+				logger.error("Create user failed for {}", user.getUsername());
+				return ResponseEntity.badRequest().build();
+			}
+			password = bCryptPasswordEncoder.encode(password);
+			user.setPassword(password);
+
+			userRepository.save(user);
+			cart.setUser(user);
+
+			logger.info("Create user succeeded: {}", user.getUsername());
+			return ResponseEntity.ok(user);
+		} catch (Exception ex) {
+			logger.error("Create user failed for {}", createUserRequest.getUsername());
 			return ResponseEntity.badRequest().build();
 		}
-		password = bCryptPasswordEncoder.encode(password);
-		user.setPassword(password);
-
-		userRepository.save(user);
-		cart.setUser(user);
-		return ResponseEntity.ok(user);
 	}
-	
+
 }

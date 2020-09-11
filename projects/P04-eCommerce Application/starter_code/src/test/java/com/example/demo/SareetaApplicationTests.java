@@ -1,5 +1,6 @@
 package com.example.demo;
 
+import com.example.demo.config.GeneralExceptionHandler;
 import com.example.demo.controllers.CartController;
 import com.example.demo.controllers.ItemController;
 import com.example.demo.controllers.OrderController;
@@ -14,9 +15,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
