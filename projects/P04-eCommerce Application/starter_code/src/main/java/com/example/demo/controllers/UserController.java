@@ -2,9 +2,12 @@ package com.example.demo.controllers;
 
 import java.util.Optional;
 
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,10 +21,16 @@ import com.example.demo.model.persistence.repositories.CartRepository;
 import com.example.demo.model.persistence.repositories.UserRepository;
 import com.example.demo.model.requests.CreateUserRequest;
 
+@Transactional
 @RestController
 @RequestMapping("/api/user")
 public class UserController {
-	
+	@Autowired
+	Logger logger;
+
+	@Autowired
+	private BCryptPasswordEncoder bCryptPasswordEncoder;
+
 	@Autowired
 	private UserRepository userRepository;
 	
@@ -46,7 +55,18 @@ public class UserController {
 		Cart cart = new Cart();
 		cartRepository.save(cart);
 		user.setCart(cart);
+		String password = createUserRequest.getPassword();
+		String confirmPassword = createUserRequest.getConfirmPassword();
+
+		if (password.length() < 7 || !password.equals(confirmPassword)) {
+			logger.error("Error in password. Cannot create user {}", user.getUsername());
+			return ResponseEntity.badRequest().build();
+		}
+		password = bCryptPasswordEncoder.encode(password);
+		user.setPassword(password);
+
 		userRepository.save(user);
+		cart.setUser(user);
 		return ResponseEntity.ok(user);
 	}
 	
