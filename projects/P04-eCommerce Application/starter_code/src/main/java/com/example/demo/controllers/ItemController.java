@@ -17,10 +17,12 @@ import com.example.demo.model.persistence.repositories.ItemRepository;
 @RestController
 @RequestMapping("/api/item")
 public class ItemController {
+	private final ItemRepository itemRepository;
 
-	@Autowired
-	private ItemRepository itemRepository;
-	
+	public ItemController(ItemRepository itemRepository) {
+		this.itemRepository = itemRepository;
+	}
+
 	@GetMapping
 	public ResponseEntity<List<Item>> getItems() {
 		return ResponseEntity.ok(itemRepository.findAll());

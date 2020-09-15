@@ -19,17 +19,17 @@ import com.example.demo.model.requests.CreateUserRequest;
 @RestController
 @RequestMapping("/api/user")
 public class UserController {
-	@Autowired
-	Logger logger;
+	private final Logger logger;
+	private final BCryptPasswordEncoder bCryptPasswordEncoder;
+	private final UserRepository userRepository;
+	private final CartRepository cartRepository;
 
-	@Autowired
-	private BCryptPasswordEncoder bCryptPasswordEncoder;
-
-	@Autowired
-	private UserRepository userRepository;
-	
-	@Autowired
-	private CartRepository cartRepository;
+	public UserController(Logger logger, BCryptPasswordEncoder bCryptPasswordEncoder, UserRepository userRepository, CartRepository cartRepository) {
+		this.logger = logger;
+		this.bCryptPasswordEncoder = bCryptPasswordEncoder;
+		this.userRepository = userRepository;
+		this.cartRepository = cartRepository;
+	}
 
 	@GetMapping("/id/{id}")
 	public ResponseEntity<User> findById(@PathVariable Long id) {

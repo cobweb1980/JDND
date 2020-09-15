@@ -17,14 +17,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 @Entity
 @Table(name = "user")
 public class User {
-
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@JsonProperty
 	private long id;
 	
 	@Column(nullable = false, unique = true)
-	@JsonProperty
 	private String username;
 
 	@Column(nullable = false)

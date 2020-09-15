@@ -24,21 +24,17 @@ public class Cart {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@JsonProperty
 	@Column
 	private Long id;
 	
 	@ManyToMany
-	@JsonProperty
 	@Column
     private List<Item> items;
 	
 	@OneToOne(mappedBy = "cart")
-	@JsonProperty
     private User user;
 	
 	@Column
-	@JsonProperty
 	private BigDecimal total;
 	
 	public BigDecimal getTotal() {

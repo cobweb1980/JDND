@@ -99,6 +99,22 @@ public class SareetaApplicationTests {
 		Assertions.assertEquals(3, ordersList.get(0).getItems().size());
 	}
 
+	@Test
+	public void testRemoveOrder() {
+		User user = saveAndGetUser("cobweb", "password123");
+		// data.sql contains 2 predefined items
+		List<Item> items = getAllItems();
+		Assertions.assertEquals(2, items.size());
+		Item item = items.get(1);
+
+		ModifyCartRequest cartRequest = createCartModRequest(user, item, 2);
+		Assertions.assertEquals(HttpStatus.OK, cartController.addTocart(cartRequest).getStatusCode());
+		Assertions.assertEquals(2, user.getCart().getItems().size());
+
+		cartController.removeFromcart(cartRequest);
+		Assertions.assertEquals(0, user.getCart().getItems().size());
+	}
+
 	private List<Item> getAllItems() {
 		return itemController.getItems().getBody();
 	}
